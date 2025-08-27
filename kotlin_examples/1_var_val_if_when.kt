@@ -1,6 +1,8 @@
 /**
-In-class Kotlin example code
-This file covers val and var, and if and when 
+ * CS 3170
+ * In-class Kotlin example code
+ * 8/25/2025
+ * This file covers val and var, and if and when 
 */
 fun main() {
     val kotlin = "🙂" // val needs to be assigned and cannot be changed
