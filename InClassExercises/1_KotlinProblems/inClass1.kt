@@ -56,8 +56,8 @@ fun main() {
     // and compare variables for each condition
 
     // 8. Use a when statement to determine if a character is a vowel or 
-    // consonant and print the result. Char has methods named lowerCaseChar()
-    // and upperCaseChar() you can use, or you can assume upper/lowercase
+    // consonant and print the result. Char has methods named lowercaseChar()
+    // and uppercaseChar() you can use, or you can assume upper/lowercase
     // Hint: you can create a listOf vowels
 
     // 9. Use a for loop to print the numbers 0 to 9 in reverse order. Hint -
