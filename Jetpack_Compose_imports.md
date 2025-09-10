@@ -9,4 +9,5 @@
 | `Row` | `androidx.compose.foundation.layout.Row` |
 | `Column` | `androidx.compose.foundation.layout.Column` |
 | `Box` | `androidx.compose.foundation.layout.Box` |
-
+| `Image` | `androidx.compose.foundation.Image` |
+| `painterResource()` | `androidx.compose.ui.res.painterResource` |
