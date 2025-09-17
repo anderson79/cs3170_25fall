@@ -3,4 +3,6 @@
     <string name="name">Dr. James Anderson</string>
     <string name="title">Computer Science Lecturer</string>
     <string name="number">123-456-7890</string>
+    <string name="social">drinkybird</string>
+    <string name="email">james.anderson@wright.edu</string>
 </resources>
