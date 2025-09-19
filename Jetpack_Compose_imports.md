@@ -11,3 +11,13 @@
 | `Box` | `androidx.compose.foundation.layout.Box` |
 | `Image` | `androidx.compose.foundation.Image` |
 | `painterResource()` | `androidx.compose.ui.res.painterResource` |
+| `stringResource` | `import androidx.compose.ui.res.stringResource` |
+| `Modifier.background` | `import androidx.compose.foundation.background` |
+| `Modifier.size` | `import androidx.compose.foundation.layout.size` |
+| `Icon` | `import androidx.compose.material3.Icon` |
+| `Icons` | `import androidx.compose.material.icons.Icons` |
+| `Alignment` | `import androidx.compose.ui.Alignment` |
+| `Arrangement` | `import androidx.compose.foundation.layout.Arrangement` |
+
+
+
