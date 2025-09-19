@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +27,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +43,9 @@ class MainActivity : ComponentActivity() {
             BusinessCardTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     BusinessCardApp(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
                     )
                 }
             }
@@ -51,7 +56,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BusinessCardApp(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly,
+        modifier = modifier.background(color = colorResource(id = R.color.android_green))
     ) {
         // image, name, title
         ImageNameTitleColumn(
@@ -62,18 +69,23 @@ fun BusinessCardApp(modifier: Modifier = Modifier) {
         // myrow(numberIconId, numberId)
         // myrow(handleIconId, handleId)
         // myrow(emailIconId, emailId)
-        IconTextRow(
-            icon = Icons.Default.Call,
-            textId = R.string.number
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
         )
-        IconTextRow(
-            icon = Icons.Default.LocationOn,
-            textId = R.string.social
-        )
-        IconTextRow(
-            icon = Icons.Default.Email,
-            textId = R.string.email
-        )
+        {
+            IconTextRow(
+                icon = Icons.Default.Call,
+                textId = R.string.number
+            )
+            IconTextRow(
+                icon = Icons.Default.LocationOn,
+                textId = R.string.social
+            )
+            IconTextRow(
+                icon = Icons.Default.Email,
+                textId = R.string.email
+            )
+        }
     }
 }
 
@@ -116,7 +128,8 @@ fun ImageNameTitleColumn(
         // name
         Text(
             text = stringResource(id = nameId),
-            fontSize = 36.sp
+            fontSize = 36.sp,
+            modifier = Modifier.padding(horizontal = 9.dp)
         )
         // title
         Text(
@@ -130,6 +143,8 @@ fun ImageNameTitleColumn(
 @Composable
 fun GreetingPreview() {
     BusinessCardTheme {
-        BusinessCardApp()
+        BusinessCardApp(
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
