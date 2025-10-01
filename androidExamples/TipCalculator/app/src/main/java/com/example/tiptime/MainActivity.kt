@@ -63,7 +63,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TipCalculatorApp() {
-    var amountInput by remember { mutableStateOf("0") }
 
     Column(
         modifier = Modifier
@@ -80,9 +79,6 @@ fun TipCalculatorApp() {
                 .align(alignment = Alignment.Start)
         )
         EditNumberField(
-            amountInput = amountInput,
-            updateAmount = {newInput -> amountInput = newInput},
-            // updateAmount = {amountInput = it},
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
@@ -97,13 +93,11 @@ fun TipCalculatorApp() {
 
 @Composable
 fun EditNumberField(
-    amountInput: String,
-    updateAmount: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     TextField(
-        value = amountInput,
-        onValueChange = updateAmount,
+        value = "0",
+        onValueChange = {},   // newInput is the parameter passed
         modifier = modifier
     )
 }
