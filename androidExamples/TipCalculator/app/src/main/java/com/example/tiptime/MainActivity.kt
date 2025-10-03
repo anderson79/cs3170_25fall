@@ -1,17 +1,5 @@
 /*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * The Tip Calculator was created by following the "Interacting with UI and State" slides
  */
 package com.example.tiptime
 
@@ -19,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,8 +55,37 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+@Composable
+fun EditNumberField(
+    amountInput: String,
+    onValueChange: (String) -> Unit,
+    @StringRes labelId: Int,
+    keyboardOptions: KeyboardOptions,
+    modifier: Modifier = Modifier
+) {
+
+    TextField(
+        value = amountInput,
+        onValueChange = onValueChange,   // newInput is the parameter passed
+        //onValueChange = { amountInput = it },
+        label = {Text(stringResource(id = labelId))},//,
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        modifier = modifier
+    )
+}
+
+
 @Composable
 fun TipCalculatorApp() {
+    var amountInput by remember { mutableStateOf("") }
+    var tipPercentInput by remember { mutableStateOf("") }
+
+    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    val tipPercent = tipPercentInput.toDoubleOrNull() ?: 0.0
+
+    val tipAmount = calculateTip(amount, tipPercent)
 
     Column(
         modifier = Modifier
@@ -82,34 +101,41 @@ fun TipCalculatorApp() {
                 .padding(bottom = 16.dp, top = 40.dp)
                 .align(alignment = Alignment.Start)
         )
+        // number field for amount
         EditNumberField(
+            amountInput = amountInput,
+            //onValueChange = { newAmount -> amountInput = newAmount },
+            onValueChange = { amountInput = it },
+            labelId = R.string.bill_amount,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
         )
+        // number field for tip percentage
+        EditNumberField(
+            amountInput = tipPercentInput,
+            onValueChange = { newTipPercent -> tipPercentInput = newTipPercent },
+            labelId = R.string.how_was_the_service,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxWidth()
+        )
+
+
         Text(
-            text = stringResource(R.string.tip_amount, "$0.00"),
+            text = stringResource(R.string.tip_amount,tipAmount),
             style = MaterialTheme.typography.displaySmall
         )
         Spacer(modifier = Modifier.height(150.dp))
     }
-}
-
-@Composable
-fun EditNumberField(
-    modifier: Modifier = Modifier
-) {
-    var amountInput by remember { mutableStateOf("") }
-
-    TextField(
-        value = amountInput,
-        onValueChange = { newInput -> amountInput = newInput },   // newInput is the parameter passed
-        //onValueChange = { amountInput = it },
-        label = {Text(stringResource(id = R.string.bill_amount))},//,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = modifier
-    )
 }
 
 /**
