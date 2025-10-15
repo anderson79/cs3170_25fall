@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.example.superheroes.data
+package com.example.superheroesapp.data
 
-import com.example.superheroes.R
-i
+import com.example.superheroesapp.model.Hero
+import com.example.superheroesapp.R
 
 object HeroesRepository {
     val heroes = listOf(

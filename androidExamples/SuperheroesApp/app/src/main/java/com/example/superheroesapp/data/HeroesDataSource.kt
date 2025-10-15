@@ -16,16 +16,17 @@
 
 package com.example.superheroesapp.data
 
-import com.example.superheroesapp.R
 import com.example.superheroesapp.model.Hero
+import com.example.superheroesapp.R
 
 object HeroesRepository {
+    val heroNum1 = Hero(
+        nameRes = R.string.hero1,
+        descriptionRes = R.string.description1,
+        imageRes = R.drawable.android_superhero1
+    )
     val heroes = listOf(
-        Hero(
-            nameRes = R.string.hero1,
-            descriptionRes = R.string.description1,
-            imageRes = R.drawable.android_superhero1
-        ),
+        heroNum1,
         Hero(
             nameRes = R.string.hero2,
             descriptionRes = R.string.description2,
