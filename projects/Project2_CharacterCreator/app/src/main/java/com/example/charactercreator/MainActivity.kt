@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.charactercreator.com.example.charactercreator.rememberCharacterState
+import com.example.charactercreator.com.example.charactercreator.statList
 import com.example.charactercreator.ui.theme.CharacterCreatorTheme
 
 class MainActivity : ComponentActivity() {
@@ -68,6 +69,22 @@ fun CharacterCreatorApp(
             text = "Character Creator", fontSize = 36.sp,
         )
 
+        // example of looping through list to get all stat strings
+        statList.forEach { statInfo ->
+            val statVal = character.statMap.getOrElse(statInfo.name, { 0 })
+            Text("${statInfo.name} $statVal")
+        }
+        val statVal = character.statMap.getOrElse("Invalid", { 0 })
+        Text("Invalid: $statVal")
+
+        // can loop through an array to get stats
+        for (i in 0..statList.size - 1) {
+            Text("${statList[i].name}: ${character.statArray[i]}")
+        }
+
+        // this "works" but it wont actually do what we need it to do
+        character.statArray[2] = 3
+        
         // Optional: display character name and class at the top under "Character Creator"
 
         // TODO Use composable to input name, class, and description

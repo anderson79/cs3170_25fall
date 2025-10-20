@@ -31,17 +31,25 @@ val attributesList = listOf(
     StatInfo("Defense", R.drawable.baseline_security_24, "Amount of damage blocked"),
     StatInfo("Cost", R.drawable.baseline_price_change_24, "Cost for casting this character"),
     )
+
 data class Character(
     val name: String = "",
     val charClass: String= "",
     val description: String = "",
 
     val statMap: Map<String, Int> = mapOf(
-        "Power" to 0,
-        "Endurance" to 0,
+        "Power" to 4,
+        "Endurance" to 1,
         "Speed" to 0,
-        "Focus" to 0
+        "Focus" to 5
     ),
+
+    // can use parallel arrays
+    val statArray: Array<Int> = arrayOf(4,3,2,1),
+
+    // can use individual variables
+    val power :Int = 0,
+    val endurance: Int= 0,
 
     val attributes: Map<String, Int> = mapOf(
         "Attack" to 0,
