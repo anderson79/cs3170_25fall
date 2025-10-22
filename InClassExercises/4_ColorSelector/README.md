@@ -83,9 +83,15 @@ colorState.value = color.withColor(option.name, option.color) // or withString()
 
 > ✅ The color now updates immediately.
 
-![Radio Buttons](withRadioButtons.png)
+**It's**  
+![Radio Buttons Red](radioRed.png)  
+**Pretty**  
+![Radio Buttons Green](radioGreen.png)  
+**Pretty**  
+![Radio Buttons Blue](radioBlue.png)  
+**Good**
 
-_There's still some issues..._
+_But there's still some issues..._
 
 ---
 
@@ -129,7 +135,7 @@ fun MinimalDropdownMenu() {
 
 ## 🟦 Part 2 – RGB Mixer (Adjust Channels)
 
-![Dropdown](withSliders.png)
+![With Sliders](withSliders.png)
 
 
 ### Step 1 – Model
@@ -177,11 +183,91 @@ That changes `color` _inside_ of our ColorChoice, but the colorState.value is st
 
 ### Step 3 - Copy for Recomposition
 
-There are other side-effects to making `color` a `var` that we won't really get into, but what we want is an **immutable** object, so if we ever want to change a part of it, we must intentially change the original. It turns out, changing the object that we used `remember` on is what triggers **recomposition**. 
+There are other side-effects to making `color` a `var` that we won't really get into, but what we want is an **immutable** object, so if we ever want to change a part of it, we must _intentially_ have the state object reference a brand new `ColorChoice`. It turns out, changing the object that we used `remember` on is what triggers **recomposition**. 
 
 We saw inside `colorState.value` that things were in fact changing. We didn't see that on the screen because we kept the same `colorState.value`. Jetpack Compose monitors `colorState.value` and only does recomposition when `colorState.value` references a **different** `ColorChoice`. This sort of makes sense, if the value doesn't change, our app doesn't need to refresh the UI because, well, nothing different or new needs to be drawn.
 
-We need to copy our `ColorChoice`, and give the copy the new `Color` with the updated RGB values. A convention for writing methods that return a copy of the current object **with** updated data is to prefix the function name with, well, `with`. Similarly to how we use `set` with setters, `get` with getters, `with` says, I want this object, but `with` this thing updated.
+This diagram sort of shows what's happening. Say we had our `colorState` and `currentColor` set like this:
+
+```kotlin
+val colorState = remember { mutableStateOf(ColorChoice("Blue", Color.Blue))}
+val currentColor = colorState.value
+```  
+It would kind of look like in memory:
+
+```kotlin
+┌────────────────────────────────────────────┐
+│ MutableState<ColorChoice>                  │
+│   value ─────────┐                         │
+└────────────────────────────────────────────┘
+                   │
+                   ▼
+        ┌──────────────────────────────┐
+        │ ColorChoice                  │
+        │   name = "Blue"              │
+        │   color = Color.Blue         │
+        └──────────────────────────────┘
+                   ▲
+                   │
+            currentColor
+```
+
+Then if we did this:
+
+```kotlin
+currentColor.name = "Red"
+currentColor.color = Color.Red
+```
+
+It would now look like this:
+
+```kotlin
+┌────────────────────────────────────────────┐
+│ MutableState<ColorChoice>                  │
+│   value ─────────┐                         │
+└────────────────────────────────────────────┘
+                   │
+                   ▼
+        ┌──────────────────────────────┐
+        │ ColorChoice                  │
+        │   name = "Red"               │
+        │   color = Color.Red          │
+        └──────────────────────────────┘
+                   ▲
+                   │
+            currentColor
+```
+
+Jetpack Compose doesn't look into every object to see if any of it's members has changed, that would be too much work. Instead, it checks to see if any of the objects it is watching, which happens when we use `remember` is reassigned. In this situation, `colorState.value` is still assigned to the same object.
+
+To make the previous example work, we need to reassign `colorState.value`. So if we did this:
+
+```kotlin
+val currentColor = colorState.value
+colorState.value = currentColor.copy(name = "Red", color = Color.Red)
+```  
+We would end up with this:  
+```kotlin
+┌────────────────────────────────────────────┐
+│ MutableState<ColorChoice>                  │
+│   value ───────────────┐                   │
+└────────────────────────────────────────────┘
+                          │
+                          ▼
+             ┌──────────────────────────────┐
+             │ ColorChoice                  │
+             │   name = "Red"               │
+             │   color = Color.Blue         │
+             └──────────────────────────────┘
+
+currentColor ───────────►  ┌──────────────────────────────┐
+                           │ ColorChoice                  │
+                           │   name = "Red"               │
+                           │   color = Color.Red          │
+                           └──────────────────────────────┘
+```
+
+So, to change the RGB values stored in `currentColor.color`,  we need to reassign `colorState.value` to a different `ColorChoice` with the updated `Color`. A convention for writing methods that return a copy of the current object **with** updated data is to prefix the function name with, well, `with`. Similarly to how we use `set` with setters, `get` with getters, `with` says, I want this object, but `with` this thing updated.
 
 ```kotlin
 { colorName, newValue ->
