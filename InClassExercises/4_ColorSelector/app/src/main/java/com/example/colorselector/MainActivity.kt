@@ -32,17 +32,23 @@ import androidx.compose.ui.unit.dp
 import com.example.colorselector.ui.theme.ColorSelectorTheme
 
 data class ColorChoice(
-    var name: String,
-    var color: Color,
+    val name: String,
+    val color: Color,
     val isFavorite: Boolean = false
 ) {
-    fun setColorChannel(channel: String, value: Float) {
-        this.color = when (channel) {
+    fun setColorChannel(channel: String, value: Float): Color {
+        return when (channel) {
             "Red" -> color.copy(red = value)
             "Green" -> color.copy(green = value)
             "Blue" -> color.copy(blue = value)
             else -> color
         }
+    }
+
+    fun withUpdatedColor(channel: String, value: Float): ColorChoice {
+        val newColor = setColorChannel(channel, value)
+
+        return this.copy(color = newColor)
     }
 }
 
@@ -55,6 +61,7 @@ fun colorFromString(colorStr: String): Color {
         "Red" -> Color.Red
         "Green" -> Color.Green
         "Blue" -> Color.Blue
+        "Magenta" -> Color.Magenta
         else -> Color.Unspecified
     }
 }
@@ -73,7 +80,7 @@ fun colorFromString(colorStr: String, color: Color): Float {
     }
 }
 
-val colorOptions = listOf("Red", "Green", "Blue")
+val colorOptions = listOf("Red", "Green", "Blue", "Magenta")
 
 
 class MainActivity : ComponentActivity() {
@@ -128,9 +135,43 @@ fun ColorSelectorApp(myModifier: Modifier = Modifier) {
 
         ColorSliders(
             color = currentColor.color,
-            updateColor = { colorName, newValue -> }
+            updateColor = { colorName, newValue ->
+                colorState.value = currentColor.withUpdatedColor(colorName, newValue)
+                //colorState.value.setColorChannel(colorName, newValue)
+            }
 
         )
+    }
+}
+
+
+/**
+ * This Composable displays a Slider for each color in colorOptions (Red, Green, Blue)
+ *  When we finish it, each slider will control an individual color channel, so we can make
+ *  ALL the colors
+ *
+ *  updateColor is called with a String for which color slider is being used and a Float for what
+ *  the current value of that slider is. These can be used to mutate the single color channel with
+ *  a specific value
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ColorSliders(
+    color: Color,
+    updateColor: (colorName: String, slider: Float) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column() {
+        colorOptions.forEach { colorOption ->
+            Row() {
+                Text("$colorOption: ${colorFromString(colorOption, color)}")
+                Slider(
+                    value = colorFromString(colorOption, color),
+                    onValueChange = { newValue -> updateColor(colorOption, newValue) }
+                )
+            }
+
+        }
     }
 }
 
@@ -178,34 +219,6 @@ fun ColorRadioButtons(
     }
 }
 
-/**
- * This Composable displays a Slider for each color in colorOptions (Red, Green, Blue)
- *  When we finish it, each slider will control an individual color channel, so we can make
- *  ALL the colors
- *
- *  updateColor is called with a String for which color slider is being used and a Float for what
- *  the current value of that slider is. These can be used to mutate the single color channel with
- *  a specific value
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ColorSliders(
-    color: Color,
-    updateColor: (colorName: String, slider: Float) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column() {
-        colorOptions.forEach { colorOption ->
-            Row() {
-                Slider(
-                    value = color.red,
-                    onValueChange = {}
-                )
-            }
-
-        }
-    }
-}
 
 /**
  * This Composable shows a DropDownMenu with three (or how many strings are in colorOptions)
