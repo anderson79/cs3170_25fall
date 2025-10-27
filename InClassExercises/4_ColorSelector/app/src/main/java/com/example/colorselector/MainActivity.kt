@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -48,6 +46,10 @@ data class ColorChoice(
     }
 }
 
+/**
+ * This function takes a String either "Red" "Green" or "Blue"
+ * and returns a color object with only that color
+ */
 fun colorFromString(colorStr: String): Color {
     return when (colorStr) {
         "Red" -> Color.Red
@@ -57,6 +59,11 @@ fun colorFromString(colorStr: String): Color {
     }
 }
 
+/**
+ * This function lets us pass in a string "Red" "Green" or "Blue" and
+ * return the corresponding value of the RGB color component
+ *
+ */
 fun colorFromString(colorStr: String, color: Color): Float {
     return when (colorStr) {
         "Red" -> color.red
@@ -77,7 +84,9 @@ class MainActivity : ComponentActivity() {
             ColorSelectorTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ColorSelectorApp(
-                        myModifier = Modifier.fillMaxSize().padding(innerPadding)
+                        myModifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
                     )
                 }
             }
@@ -103,51 +112,81 @@ fun ColorSelectorApp(myModifier: Modifier = Modifier) {
         Text("currentColor.isFavorite: ${currentColor.isFavorite}")
 
         ColorDropdownMenu(
-            menuItemClick = {colorOption: String ->
+            menuItemClick = { colorOption: String ->
                 colorState.value = colorState.value.copy(
-                name = colorOption,
-                color = colorFromString(colorOption))
+                    name = colorOption,
+                    color = colorFromString(colorOption)
+                )
             }
         )
 
-        Row() {
-            colorOptions.forEach { colorOption ->
-                // single radio button
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                )
-                {
-                    Text(text = "$colorOption")
-
-                    RadioButton(
-                        selected = currentColor.name == colorOption,
-                        onClick = {
-                            colorState.value = colorState.value.copy(
-                                name = colorOption,
-                                color = colorFromString(colorOption)
-                                //colorState.value = ColorChoice(name = colorOption, color = colorFromString(colorOption)
-                            )
-
-                            // setting the fields directly doesn't trigger recomposition
-                            // so the values of name and color change, but the change isn't reflected in the app
-                            // colorState.value.name = colorOption
-                            // colorState.value.color = colorFromString(colorOption)
-                        }
-                    )
-                }
-            }
-
-        }
+        ColorRadioButtons(
+            currentColorStr = currentColor.name,
+            onRadioButtonClick = { newColorStr ->
+                colorState.value = currentColor.copy(name = newColorStr, color = colorFromString(newColorStr))}
+        )
 
         ColorSliders(
             color = currentColor.color,
-            updateColor = {colorName, newValue-> }
+            updateColor = { colorName, newValue -> }
 
         )
     }
 }
 
+/**
+ * This Composable shows three (or how many strings are in colorOptions) radio buttons with
+ * the color string next to them
+ *
+ * onRadioButtonClick will be called with the String for the color corresponding to which
+ * radio button was clicked. That string can be used to change the current color
+ */
+@Composable
+fun ColorRadioButtons(
+    currentColorStr: String,
+    onRadioButtonClick: (String) -> Unit,
+    myModifier: Modifier = Modifier
+) {
+    Row() {
+        colorOptions.forEach { colorOption ->
+            // single radio button
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                Text(text = "$colorOption")
 
+                RadioButton(
+                    selected = currentColorStr == colorOption,
+                    onClick = { onRadioButtonClick(colorOption) }
+//                        {
+//                        colorState.value = colorState.value.copy(
+//                            name = colorOption,
+//                            color = colorFromString(colorOption)
+//                            //colorState.value = ColorChoice(name = colorOption, color = colorFromString(colorOption)
+//                        )
+
+                    // setting the fields directly doesn't trigger recomposition
+                    // so the values of name and color change, but the change isn't reflected in the app
+                    // colorState.value.name = colorOption
+                    // colorState.value.color = colorFromString(colorOption)
+                    //}
+                )
+            }
+        }
+
+    }
+}
+
+/**
+ * This Composable displays a Slider for each color in colorOptions (Red, Green, Blue)
+ *  When we finish it, each slider will control an individual color channel, so we can make
+ *  ALL the colors
+ *
+ *  updateColor is called with a String for which color slider is being used and a Float for what
+ *  the current value of that slider is. These can be used to mutate the single color channel with
+ *  a specific value
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorSliders(
@@ -155,7 +194,6 @@ fun ColorSliders(
     updateColor: (colorName: String, slider: Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Column() {
         colorOptions.forEach { colorOption ->
             Row() {
@@ -167,9 +205,15 @@ fun ColorSliders(
 
         }
     }
-
 }
 
+/**
+ * This Composable shows a DropDownMenu with three (or how many strings are in colorOptions)
+ * options
+ *
+ * menuItemClick will be called with the String for the color corresponding to which
+ * DropdownMenuItem was clicked. That string can be used to change the current color
+ */
 @Composable
 fun ColorDropdownMenu(
     menuItemClick: (String) -> Unit
