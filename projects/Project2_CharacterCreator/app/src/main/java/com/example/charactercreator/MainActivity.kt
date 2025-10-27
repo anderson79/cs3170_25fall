@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.charactercreator.com.example.charactercreator.rememberCharacterState
 import com.example.charactercreator.com.example.charactercreator.statList
+import com.example.charactercreator.com.example.charactercreator.updateStat
 import com.example.charactercreator.ui.theme.CharacterCreatorTheme
 
 class MainActivity : ComponentActivity() {
@@ -70,12 +72,12 @@ fun CharacterCreatorApp(
         )
 
         // example of looping through list to get all stat strings
-        statList.forEach { statInfo ->
-            val statVal = character.statMap.getOrElse(statInfo.name, { 0 })
-            Text("${statInfo.name} $statVal")
-        }
-        val statVal = character.statMap.getOrElse("Invalid", { 0 })
-        Text("Invalid: $statVal")
+//        statList.forEach { statInfo ->
+//            val statVal = character.statMap.getOrElse(statInfo.name, { 0 })
+//            Text("${statInfo.name} $statVal")
+//        }
+//        val statVal = character.statMap.getOrElse("Invalid", { 0 })
+//        Text("Invalid: $statVal")
 
         // can loop through an array to get stats
         for (i in 0..statList.size - 1) {
@@ -83,8 +85,14 @@ fun CharacterCreatorApp(
         }
 
         // this "works" but it wont actually do what we need it to do
-        character.statArray[2] = 3
-        
+        //character.statArray[2] = 3
+        Button(
+            onClick = {
+                updateStat(characterState, 2, 1, character.maxPoints)
+            }
+        ) {
+            Text("Text")
+        }
         // Optional: display character name and class at the top under "Character Creator"
 
         // TODO Use composable to input name, class, and description

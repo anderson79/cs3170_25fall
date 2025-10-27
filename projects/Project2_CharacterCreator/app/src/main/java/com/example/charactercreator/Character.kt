@@ -45,7 +45,7 @@ data class Character(
     ),
 
     // can use parallel arrays
-    val statArray: Array<Int> = arrayOf(4,3,2,1),
+    val statArray: Array<Int> = arrayOf(0,0,0,0),
 
     // can use individual variables
     val power :Int = 0,
@@ -82,6 +82,23 @@ data class Character(
         return copy(
             statMap = newStats,
             attributes = computeAttributes(newStats)
+        )
+    }
+
+    /** Returns a copy with updated stats and recalculated attributes. */
+    fun withUpdatedStat(statIndex: Int, delta: Int, maxPoints: Int): Character {
+        val newStats = statArray.clone()
+        val currentValue = newStats[statIndex]
+        val newValue = (currentValue + delta).coerceAtLeast(0)
+
+        // Prevent exceeding total pool
+        if (delta > 0 && totalPoints >= maxPoints) return this
+        if (newValue == currentValue) return this
+
+        newStats[statIndex] = newValue
+        return copy(
+            statArray = newStats,
+            //attributes = computeAttributes(newStats)
         )
     }
 
@@ -128,6 +145,17 @@ fun updateStat(
 ) {
     val current = characterState.value
     val updated = current.withUpdatedStat(statName, delta, maxPoints)
+    if (updated != current) {
+        characterState.value = updated
+    }
+}
+
+fun updateStat(    characterState: MutableState<Character>,
+                   statIndex: Int,
+                   delta: Int,
+                   maxPoints: Int) {
+    val current = characterState.value
+    val updated = current.withUpdatedStat(statIndex, delta, maxPoints)
     if (updated != current) {
         characterState.value = updated
     }
