@@ -59,7 +59,7 @@ fun CharacterCreatorApp(
     // You can use just character to access the values, but changing them here will not update the state!
     val character = characterState.value
     // You can thank me later, but here is the difficult task of calculating how many points are left
-    val remainingPoints = character.maxPoints - character.totalPoints
+    character.maxPoints - character.totalPoints
 
 
     Column(
@@ -71,37 +71,53 @@ fun CharacterCreatorApp(
             text = "Character Creator", fontSize = 36.sp,
         )
 
-        // example of looping through list to get all stat strings
-//        statList.forEach { statInfo ->
-//            val statVal = character.statMap.getOrElse(statInfo.name, { 0 })
-//            Text("${statInfo.name} $statVal")
-//        }
-//        val statVal = character.statMap.getOrElse("Invalid", { 0 })
-//        Text("Invalid: $statVal")
+        // *****************************************************************************************
+        // Examples of using the characterState to display and update stats
+        // The same approach will also work for displaying attributes
 
-        // can loop through an array to get stats
-        for (i in 0..statList.size - 1) {
+        // example of looping through list to get all stat strings
+        // statInfo has the statName and statIcon you can access, and in just one loop you can
+        // go through all the stats. Or you can manually output the stats one at a time
+        statList.forEach { statInfo ->
+            val statVal = character.statMap.getOrElse(statInfo.name, { 0 })
+            Text("${statInfo.name}: $statVal")
+        }
+
+        // this Button will add 1 to the stat mapped to "Speed" in the statMap of the character
+        Button(
+            onClick = {
+                updateStat(characterState, "Speed", 1, character.maxPoints)
+            }) {
+            Text("Inc statMap[\"Speed\"]")
+        }
+
+        // example of looping through the statList and charcter.statArray in parallel so index i
+        // has the stat info and the corresponding stat value in the lists/arrays
+        for (i in 0..statList.size - 1) { // this is the same as writing:
+            // for (int i = 0; i < statList.size; i++)
             Text("${statList[i].name}: ${character.statArray[i]}")
         }
 
-        // this "works" but it wont actually do what we need it to do
-        //character.statArray[2] = 3
+        // this Button will add 1 to the stat at index 2 (Speed) in the statArray of the character
         Button(
             onClick = {
                 updateStat(characterState, 2, 1, character.maxPoints)
-            }
-        ) {
-            Text("Text")
+            }) {
+            Text("Inc statArray[2]")
         }
+        //******************************************************************************************
+
         // Optional: display character name and class at the top under "Character Creator"
 
         // TODO Use composable to input name, class, and description
-        // Example: onNameChange = { newName -> characterState.value = character.copy(name = newName) }
+        //  Example: onNameChange = { newName -> characterState.value = character.copy(name = newName) }
         // Optional: can use a DropdownMenu and use a list of classes to choose from
         // Optional: can have a Button or placeholder for selecting or showing character image
 
-        // TODO Add 4 StatButtons to inc/dec each stat. These can be placed, two rows of two sets of buttons, or you can think of a way to use a LazyVerticalGrid to loop through statList and create 4 sets of buttons that way
-        // Each StatButton should call updateStat() with +/- 1
+        // TODO Add 4 StatButtons to inc/dec each stat. These can be placed, two rows of two sets of
+        //  buttons, or you can think of a way to use a LazyVerticalGrid to loop through statList
+        //  and create 4 sets of buttons that way
+        //  Each StatButton should call updateStat() with +/- 1
 
         // TODO: show remaining points (simple Text here is good)
 
@@ -109,20 +125,25 @@ fun CharacterCreatorApp(
     }
 }
 
+// *************************************************************************************************
+// These items are how I would recommend you break down the Composable functions in your project.
+// It is not necessary you use all or any of these, but it will probably be easier if you create a
+// couple Composable functions to help you make sense of what is happening in your code
+
 // TODO: TextEntry composable
-// Needs: Character info (name, class, description), lambdas for when name, class, and description changes
+//  Needs: Character info (name, class, description), lambdas for when name, class, and description changes
 // Optional: Modifier
 
 // TODO: EnterTextField composable
-// Needs: value to display, lambda to handle when the value changes (when user types)
+//  Needs: value to display, lambda to handle when the value changes (when user types)
 // Optional: String (or String resource id) for label, Icon (or Icon resource ID) to put in the TextField, Modifier
 
 // TODO: StatButtons composable
-// Needs: stat name, stat value, lambdas for increment and decrementing
+//  Needs: stat name, stat value, lambdas for increment and decrementing
 // Optional: Icon (or Icon resource ID) to show with each stat, Modifier
 
 // TODO: AttributeList Composable
-// Needs: map of stats: values
+//  Needs: map of stats: values
 // Optional: Modifier
 
 @Preview(showBackground = true)
