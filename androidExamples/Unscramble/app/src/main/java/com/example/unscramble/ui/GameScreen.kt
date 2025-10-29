@@ -53,11 +53,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.unscramble.R
 import com.example.unscramble.ui.theme.UnscrambleTheme
 
 @Composable
-fun GameScreen() {
+fun GameScreen(
+    gameViewModel: GameViewModel = viewModel()
+) {
+
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Column(
@@ -139,6 +143,7 @@ fun GameLayout(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(mediumPadding)
         ) {
+            // how many words have been used
             Text(
                 modifier = Modifier
                     .clip(shapes.medium)
@@ -149,17 +154,23 @@ fun GameLayout(modifier: Modifier = Modifier) {
                 style = typography.titleMedium,
                 color = colorScheme.onPrimary
             )
+
+            // display scrambled word
             Text(
-                text = "scrambleun",
+                text = "scrambleun", // scrambled word
                 style = typography.displayMedium
             )
+
+            // instructions
             Text(
                 text = stringResource(R.string.instructions),
                 textAlign = TextAlign.Center,
                 style = typography.titleMedium
             )
+
+            // guess entry
             OutlinedTextField(
-                value = "",
+                value = "guess", // guess
                 singleLine = true,
                 shape = shapes.large,
                 modifier = Modifier.fillMaxWidth(),
@@ -168,14 +179,14 @@ fun GameLayout(modifier: Modifier = Modifier) {
                     unfocusedContainerColor = colorScheme.surface,
                     disabledContainerColor = colorScheme.surface,
                 ),
-                onValueChange = { },
+                onValueChange = { }, // handle typing
                 label = { Text(stringResource(R.string.enter_your_word)) },
                 isError = false,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = { }
+                    onDone = { } //press enter
                 )
             )
         }
