@@ -23,6 +23,8 @@ class GameViewModel : ViewModel() {
         if (usedWords.contains(currentWord)) {
             return pickRandomWordAndShuffle()
         } else {
+            // forgot to add this, we need to add the word we picked to the set of used words
+            usedWords.add(currentWord)
             return shuffleCurrentWord(currentWord)
         }
     }
