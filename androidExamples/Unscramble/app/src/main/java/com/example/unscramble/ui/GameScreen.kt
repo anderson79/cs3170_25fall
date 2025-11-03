@@ -87,6 +87,8 @@ fun GameScreen(
             currentGuess = gameViewModel.userGuess,
             onUserGuessChanged = { updatedGuess -> gameViewModel.updateUserGuess(updatedGuess) },
             isCurrentGuessWrong = gameUiState.isGuessedWordWrong,
+            onKeyboardDone = { gameViewModel.checkUseGuess() },
+            currentWordCount = gameUiState.currentWordCount,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
@@ -102,7 +104,7 @@ fun GameScreen(
 
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { gameViewModel.checkUseGuess()}
+                onClick = { gameViewModel.checkUseGuess() }
             ) {
                 Text(
                     text = stringResource(R.string.submit),
@@ -111,7 +113,7 @@ fun GameScreen(
             }
 
             OutlinedButton(
-                onClick = { },
+                onClick = { gameViewModel.skipWord() },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -122,6 +124,13 @@ fun GameScreen(
         }
 
         GameStatus(score = gameUiState.score, modifier = Modifier.padding(20.dp))
+    }
+
+    if ( gameUiState.isGameOver) {
+        FinalScoreDialog(
+            score = gameUiState.score,
+            onPlayAgain = { gameViewModel.resetGame() }
+        )
     }
 }
 
@@ -143,7 +152,9 @@ fun GameLayout(
     currentGuess: String,
     isCurrentGuessWrong: Boolean,
     onUserGuessChanged: (String) -> Unit,
+    onKeyboardDone: () -> Unit,
     currentScrambledWord: String,
+    currentWordCount: Int,
     modifier: Modifier = Modifier
 ) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
@@ -164,7 +175,7 @@ fun GameLayout(
                     .background(colorScheme.surfaceTint)
                     .padding(horizontal = 10.dp, vertical = 4.dp)
                     .align(alignment = Alignment.End),
-                text = stringResource(R.string.word_count, 0),
+                text = stringResource(R.string.word_count, currentWordCount),
                 style = typography.titleMedium,
                 color = colorScheme.onPrimary
             )
@@ -206,7 +217,7 @@ fun GameLayout(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = { } //press enter
+                    onDone = { onKeyboardDone() } //press enter
                 )
             )
         }
