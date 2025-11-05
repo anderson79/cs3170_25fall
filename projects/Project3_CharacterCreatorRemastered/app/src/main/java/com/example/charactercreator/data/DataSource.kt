@@ -2,7 +2,7 @@ package com.example.charactercreator.data
 
 import androidx.annotation.DrawableRes
 import com.example.charactercreator.R
-import com.example.charactercreator.model.makeCharacter
+import com.example.charactercreator.makeCharacter
 
 object DataSource {
 

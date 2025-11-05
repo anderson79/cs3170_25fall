@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.charactercreator.data.DataSource.statList
 import com.example.charactercreator.ui.theme.CharacterCreatorTheme
 
 class MainActivity : ComponentActivity() {

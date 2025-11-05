@@ -25,7 +25,7 @@ fun AttributeList(
         modifier = modifier
             .padding(horizontal = 64.dp)
     ) {
-        items(attributesList) { attribute ->
+        items(attribList) { attribute ->
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
