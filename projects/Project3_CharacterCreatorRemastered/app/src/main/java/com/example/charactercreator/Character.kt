@@ -38,27 +38,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
-// this little class is just to group the stat/attribute names with their icon and a short
-// description
-data class StatInfo(
-    val name: String, @DrawableRes val icon: Int, val description: String
-)
-
-// statList has a StatInfo for each stat to group the name, icon, and short description of each stst
-val statList = listOf(
-    StatInfo("Power", R.drawable.construction_24px, "Increases attack damage"),
-    StatInfo("Endurance", R.drawable.baseline_fitness_center_24, "Improves defense"),
-    StatInfo("Speed", R.drawable.baseline_bolt_24, "Boosts agility"),
-    StatInfo("Focus", R.drawable.baseline_visibility_24, "Reduces cost")
-)
-
-// similar to statList, attrib list has a StatInfo for each attribute
-val attribList = listOf(
-    StatInfo("Attack", R.drawable.swords_24px, "Amount of damage done"),
-    StatInfo("Defense", R.drawable.baseline_security_24, "Amount of damage blocked"),
-    StatInfo("Cost", R.drawable.baseline_price_change_24, "Cost for casting this character"),
-)
-
 /**
  * All the fields of Character have a default initial value, so you only need to give it the
  * fields you want. I recommend NOT giving it a statMap/statArray nor a attribMap/attribArray. Those

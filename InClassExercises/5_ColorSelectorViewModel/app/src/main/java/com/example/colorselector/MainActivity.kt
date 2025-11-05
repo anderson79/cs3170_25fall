@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,59 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.colorselector.ui.theme.ColorSelectorTheme
-
-data class ColorChoice(
-    val name: String,
-    val color: Color,
-    val isFavorite: Boolean = false
-) {
-    fun setColorChannel(channel: String, value: Float): Color {
-        return when (channel) {
-            "Red" -> color.copy(red = value)
-            "Green" -> color.copy(green = value)
-            "Blue" -> color.copy(blue = value)
-            else -> color
-        }
-    }
-
-    fun withUpdatedColor(channel: String, value: Float): ColorChoice {
-        val newColor = setColorChannel(channel, value)
-
-        return this.copy(color = newColor)
-    }
-}
-
-/**
- * This function takes a String either "Red" "Green" or "Blue"
- * and returns a color object with only that color
- */
-fun colorFromString(colorStr: String): Color {
-    return when (colorStr) {
-        "Red" -> Color.Red
-        "Green" -> Color.Green
-        "Blue" -> Color.Blue
-        "Magenta" -> Color.Magenta
-        else -> Color.Unspecified
-    }
-}
-
-/**
- * This function lets us pass in a string "Red" "Green" or "Blue" and
- * return the corresponding value of the RGB color component
- *
- */
-fun colorFromString(colorStr: String, color: Color): Float {
-    return when (colorStr) {
-        "Red" -> color.red
-        "Green" -> color.green
-        "Blue" -> color.blue
-        else -> 0f
-    }
-}
-
-val colorOptions = listOf("Red", "Green", "Blue", "Magenta")
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,11 +51,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun ColorSelectorApp(myModifier: Modifier = Modifier) {
+    val colorViewModel: ColorViewModel = viewModel()
+
     val useDropdown by remember { mutableStateOf(true) }
-    val colorState = remember { mutableStateOf(ColorChoice("Red", Color.Red, isFavorite = true)) }
+    // val colorState = remember { mutableStateOf(ColorChoice("Red", Color.Red, isFavorite = true)) }
+    val colorState = colorViewModel.colorState.collectAsState()
     val currentColor =
         colorState.value  // just a convenient way to access but not change the current color
 
@@ -120,23 +72,27 @@ fun ColorSelectorApp(myModifier: Modifier = Modifier) {
 
         ColorDropdownMenu(
             menuItemClick = { colorOption: String ->
-                colorState.value = colorState.value.copy(
-                    name = colorOption,
-                    color = colorFromString(colorOption)
-                )
+                colorViewModel.selectColor(colorOption)
+//                colorState.value = colorState.value.copy(
+//                    name = colorOption,
+//                    color = colorFromString(colorOption)
+//                )
             }
         )
 
         ColorRadioButtons(
             currentColorStr = currentColor.name,
             onRadioButtonClick = { newColorStr ->
-                colorState.value = currentColor.copy(name = newColorStr, color = colorFromString(newColorStr))}
+                colorViewModel.selectColor(newColorStr)
+                //colorState.value = currentColor.copy(name = newColorStr, color = colorFromString(newColorStr))
+            }
         )
 
         ColorSliders(
             color = currentColor.color,
             updateColor = { colorName, newValue ->
-                colorState.value = currentColor.withUpdatedColor(colorName, newValue)
+
+                //colorState.value = currentColor.withUpdatedColor(colorName, newValue)
                 //colorState.value.setColorChannel(colorName, newValue)
             }
 
