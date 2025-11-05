@@ -67,18 +67,20 @@ Inside it:
 In `MainActivity.kt`, use the Compose `viewModel()` function:
 
 ```kotlin
-val viewModel: ColorViewModel = viewModel()
-val colorChoice by viewModel.colorState.collectAsState()
+val colorViewModel: ColorViewModel = viewModel()
+val colorState by viewModel.colorState.collectAsState()\
+val currentColor = colorState.value
 ```
 
 Then pass the ViewModel’s data and methods to your composables:
 
 ```kotlin
-ColorSelectorApp(
-    colorChoice = colorChoice,
-    onSelectColor = viewModel::selectColor,
-    onUpdateChannel = viewModel::updateChannel
-)
+ColorRadioButtons(
+            currentColorStr = currentColor.name,
+            onRadioButtonClick = { newColorStr ->
+                colorViewModel.selectColor(newColorStr)
+            }
+        )
 ```
 
 ---
@@ -86,16 +88,7 @@ ColorSelectorApp(
 ## 🧠 Part 3 – Update Your Composables
 
 ### `ColorSelectorApp`
-Change it to take parameters instead of owning the state:
-```kotlin
-@Composable
-fun ColorSelectorApp(
-    colorChoice: ColorChoice,
-    onSelectColor: (String) -> Unit,
-    onUpdateChannel: (String, Float) -> Unit,
-    modifier: Modifier = Modifier
-)
-```
+
 Inside, remove the `remember { mutableStateOf(...) }` block.  
 Use the parameters instead when calling your dropdown, radio buttons, and sliders.
 
