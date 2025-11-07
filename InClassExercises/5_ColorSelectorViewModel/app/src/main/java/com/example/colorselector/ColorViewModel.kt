@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+data class ColorChoiceUiState(
+    val currentColor: ColorChoice,
+    //val favoriteColor: String,
+    val favoriteColor: Color
+)
 data class ColorChoice(
     val name: String,
     val color: Color,
@@ -61,8 +66,6 @@ fun colorFromString(colorStr: String, color: Color): Float {
 
 val colorOptions = listOf("Red", "Green", "Blue", "Magenta")
 
-
-
 class ColorViewModel: ViewModel() {
     private var _colorState = MutableStateFlow(ColorChoice("Red", Color.Red, isFavorite = true))
     val colorState: StateFlow<ColorChoice> = _colorState
@@ -71,7 +74,7 @@ class ColorViewModel: ViewModel() {
     fun selectColor(name: String) {
         val newColor = colorFromString(name)
 
-        // _colorState.value = _colorState.value.copy(name = name, color = newColor)
+         //_colorState.value = _colorState.value.copy(name = name, color = newColor)
 
         _colorState.update { currentState ->
             currentState.copy(name = name, color = newColor)

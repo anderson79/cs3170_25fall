@@ -35,6 +35,7 @@ import com.example.colorselector.ui.theme.ColorSelectorTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+//        val colorViewModel: ColorViewModel = viewModel()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -52,8 +53,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ColorSelectorApp(myModifier: Modifier = Modifier) {
-    val colorViewModel: ColorViewModel = viewModel()
+fun ColorSelectorApp(
+    colorViewModel: ColorViewModel = viewModel(),
+    myModifier: Modifier = Modifier
+) {
+    //val colorViewModel: ColorViewModel = viewModel() // could have viewmodel here
 
     val useDropdown by remember { mutableStateOf(true) }
     // val colorState = remember { mutableStateOf(ColorChoice("Red", Color.Red, isFavorite = true)) }
@@ -91,7 +95,7 @@ fun ColorSelectorApp(myModifier: Modifier = Modifier) {
         ColorSliders(
             color = currentColor.color,
             updateColor = { colorName, newValue ->
-
+                colorViewModel.updateChannel(colorName, newValue)
                 //colorState.value = currentColor.withUpdatedColor(colorName, newValue)
                 //colorState.value.setColorChannel(colorName, newValue)
             }
