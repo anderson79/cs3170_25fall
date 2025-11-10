@@ -15,6 +15,7 @@
  */
 package com.example.cupcake
 
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -39,7 +40,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cupcake.data.DataSource
+import com.example.cupcake.ui.OrderSummaryScreen
 import com.example.cupcake.ui.OrderViewModel
+import com.example.cupcake.ui.SelectOptionScreen
 import com.example.cupcake.ui.StartOrderScreen
 import com.example.cupcake.ui.theme.CupcakeTheme
 
@@ -95,19 +98,58 @@ fun CupcakeApp(
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsState()
 
-        NavHost (
+        NavHost(
             navController = navController,
             startDestination = CupcakeScreen.Start.name,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(CupcakeScreen.Start.name) {
+            // Start screen - select quantity
+            composable(route = CupcakeScreen.Start.name) {
                 StartOrderScreen(
                     quantityOptions = DataSource.quantityOptions,
+                    onQuantityButtonClicked = { quantity ->
+                        viewModel.setQuantity(quantity)
+                        navController.navigate(route = CupcakeScreen.Flavor.name)
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium))
                 )
             }
+
+            // Flavor screen - select flavor
+            composable(route = CupcakeScreen.Flavor.name) {
+                SelectOptionScreen(
+                    subtotal = uiState.price,
+                    options = DataSource.flavors.map { flavor -> stringResource(flavor) },
+                    onSelectionChanged = { flavor -> viewModel.setFlavor(flavor) },
+                    onNextButtonClicked = {navController.navigate(CupcakeScreen.Pickup.name)},
+                    onCancelButtonClicked = {},
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+
+            // Pickup screen - select date to pick up order
+            composable(route = CupcakeScreen.Pickup.name) {
+                SelectOptionScreen(
+                    subtotal = uiState.price,
+                    options = uiState.pickupOptions,
+                    onSelectionChanged = { date -> viewModel.setDate(date) },
+                    onNextButtonClicked = {},
+                    onCancelButtonClicked = {},
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+
+            // Summary screen - show order summary
+            composable(route = CupcakeScreen.Summary.name) {
+                OrderSummaryScreen(
+                    orderUiState = uiState,
+                    onSendButtonClicked = {message: String, summary: String -> },
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+
         }
 
     }

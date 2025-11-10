@@ -52,6 +52,8 @@ fun SelectOptionScreen(
     subtotal: String,
     options: List<String>,
     onSelectionChanged: (String) -> Unit = {},
+    onNextButtonClicked: () -> Unit = {},
+    onCancelButtonClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var selectedValue by rememberSaveable { mutableStateOf("") }
@@ -82,6 +84,7 @@ fun SelectOptionScreen(
                     Text(item)
                 }
             }
+            Text(selectedValue)
             Divider(
                 thickness = dimensionResource(R.dimen.thickness_divider),
                 modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_medium))
@@ -105,7 +108,7 @@ fun SelectOptionScreen(
         ) {
             OutlinedButton(
                 modifier = Modifier.weight(1f),
-                onClick = {}
+                onClick = onCancelButtonClicked
             ) {
                 Text(stringResource(R.string.cancel))
             }
@@ -113,7 +116,7 @@ fun SelectOptionScreen(
                 modifier = Modifier.weight(1f),
                 // the button is enabled when the user makes a selection
                 enabled = selectedValue.isNotEmpty(),
-                onClick = {}
+                onClick = onNextButtonClicked
             ) {
                 Text(stringResource(R.string.next))
             }
@@ -126,7 +129,7 @@ fun SelectOptionScreen(
 fun SelectOptionPreview() {
     CupcakeTheme {
         SelectOptionScreen(
-            subtotal = "299.99",
+            subtotal = "29.99",
             options = listOf("Option 1", "Option 2", "Option 3", "Option 4"),
             modifier = Modifier.fillMaxHeight()
         )
