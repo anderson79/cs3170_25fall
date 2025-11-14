@@ -212,6 +212,46 @@ data class Character(
         }
     }
 
+
+    /**
+     * Helper function to update the given stat based on a String. The characterState.value is assigned
+     * to a different Character if a change has occured, which will trigger recomposition
+     *
+     * @param characterState mutable state, the value field is reassigned which will trigger recomposition
+     * @param statName String of the stat in statMap to be updated
+     * @param delta how much (usually +/- 1) to change the stat by
+     * @param maxPoints the max limit for the sum of points, so we don't go over
+     */
+    fun updateStat(
+        statName: String, delta: Int, maxPoints: Int
+    ) {
+        val current = characterState.value
+        val updated = current.withUpdatedStat(statName, delta, maxPoints)
+        if (updated != current) {
+            characterState.value = updated
+        }
+    }
+
+
+    /**
+     * Helper function to update the given stat based on an index. The characterState.value is assigned
+     * to a different Character if a change has occured, which will trigger recomposition
+     *
+     * @param characterState mutable state, the value field is reassigned which will trigger recomposition
+     * @param statIndex Index of the stat in statArray to be updated
+     * @param delta how much (usually +/- 1) to change the stat by
+     * @param maxPoints the max limit for the sum of points, so we don't go over
+     */
+    fun updateStat(
+        statIndex: Int, delta: Int, maxPoints: Int
+    ): Character {
+        val current = characterState.value
+        val updated = current.withUpdatedStat(statIndex, delta, maxPoints)
+        if (updated != current) {
+            characterState.value = updated
+        }
+    }
+
     init {
         println("Character recomposed: name=$name")
     }
@@ -232,43 +272,7 @@ fun rememberCharacterState(): MutableState<Character> {
     return remember { mutableStateOf(Character()) }
 }
 
-/**
- * Helper function to update the given stat based on a String. The characterState.value is assigned
- * to a different Character if a change has occured, which will trigger recomposition
- *
- * @param characterState mutable state, the value field is reassigned which will trigger recomposition
- * @param statName String of the stat in statMap to be updated
- * @param delta how much (usually +/- 1) to change the stat by
- * @param maxPoints the max limit for the sum of points, so we don't go over
- */
-fun updateStat(
-    characterState: MutableState<Character>, statName: String, delta: Int, maxPoints: Int
-) {
-    val current = characterState.value
-    val updated = current.withUpdatedStat(statName, delta, maxPoints)
-    if (updated != current) {
-        characterState.value = updated
-    }
-}
 
-/**
- * Helper function to update the given stat based on an index. The characterState.value is assigned
- * to a different Character if a change has occured, which will trigger recomposition
- *
- * @param characterState mutable state, the value field is reassigned which will trigger recomposition
- * @param statIndex Index of the stat in statArray to be updated
- * @param delta how much (usually +/- 1) to change the stat by
- * @param maxPoints the max limit for the sum of points, so we don't go over
- */
-fun updateStat(
-    characterState: MutableState<Character>, statIndex: Int, delta: Int, maxPoints: Int
-) {
-    val current = characterState.value
-    val updated = current.withUpdatedStat(statIndex, delta, maxPoints)
-    if (updated != current) {
-        characterState.value = updated
-    }
-}
 
 // Helper function to make a Character more easily
 fun makeCharacter(

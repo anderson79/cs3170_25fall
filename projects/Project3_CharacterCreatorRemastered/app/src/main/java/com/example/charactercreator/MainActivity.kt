@@ -50,8 +50,8 @@ fun CharacterCreatorApp(
     val characterState = rememberCharacterState()
     val character = characterState.value
     val remainingPoints = character.maxPoints - character.totalPoints
-
-
+    //characterState.value.updateStat()
+    //characterViewModel.updateStat()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,

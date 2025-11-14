@@ -34,6 +34,12 @@ data class ColorChoice(
 
         return this.copy(color = newColor)
     }
+
+    fun withUpdatedColorString(colorStr: String) : ColorChoice {
+        val newColor = colorFromString(colorStr)
+
+        return this.copy(name = colorStr, color = newColor)
+    }
 }
 
 /**
@@ -77,7 +83,9 @@ class ColorViewModel: ViewModel() {
          //_colorState.value = _colorState.value.copy(name = name, color = newColor)
 
         _colorState.update { currentState ->
-            currentState.copy(name = name, color = newColor)
+            //currentState.copy(name = name, color = newColor)
+        currentState.withUpdatedColorString(name)
+
         }
     }
 
