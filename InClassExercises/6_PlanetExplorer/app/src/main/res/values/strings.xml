@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PlanetExplorer</string>
+    <string name="planet_details">Planet Details</string>
+    <string name="zoom">ZOOOOOOOOOOOOOOM</string>
+    <string name="sagan_quote">\"Somewhere, something incredible is waiting to be known\"</string>
+    <string name="carl_sagan">— Carl Sagan</string>
+</resources>
