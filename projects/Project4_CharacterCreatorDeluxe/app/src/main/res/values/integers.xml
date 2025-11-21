@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="castingCost">9</integer>
+    <integer name="attack">8</integer>
+    <integer name="defense">7</integer>
+</resources>
