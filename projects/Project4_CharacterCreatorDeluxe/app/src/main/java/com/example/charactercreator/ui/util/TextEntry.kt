@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.charactercreator.R
+import com.example.charactercreator.data.DataSource.defaultCharacters
 import com.example.charactercreator.model.Character
 
 
@@ -53,8 +54,8 @@ fun TextEntry(
             text = "Enter your character info:", modifier = Modifier.padding(4.dp)
         )
         EnterTextField(
-            inputText = "", // TODO
-            onValueChange = {/*TODO*/ },
+            inputText = character.name,
+            onValueChange = onNameChange,
             labelId = R.string.label_name,
             iconId = R.drawable.outline_person_4_24,
             modifier = Modifier.fillMaxWidth()
@@ -63,17 +64,17 @@ fun TextEntry(
 
         //enter char class
         ClassDropdownMenu(
-            currentClass = "", // TODO
-            onTextChange = { /*TODO*/ },
-            onDropdownChange = { /*TODO*/ },
+            currentClass = character.charClass,
+            onTextChange = { onClassChange(it) },
+            onDropdownChange = { onSelectedClassChange(it) },
             isCustom = false, // TODO if you want to enable custom character classes
             isDefault = true // TODO if you want to let user make non-defualt characters
         )
 
         // enter char description
         EnterTextField(
-            inputText = "", // TODO
-            onValueChange = {/*TODO*/ },
+            inputText = character.description,
+            onValueChange = {onDescriptionChange },
             labelId = R.string.label_description,
             iconId = R.drawable.outline_article_person_24,
             modifier = Modifier.fillMaxWidth()
@@ -90,13 +91,17 @@ fun EnterTextField(
     modifier: Modifier = Modifier
 ) {
     TextField(
-        value = "", // TODO
-        onValueChange = {},   // newInput is the parameter passed
-        label = { Text(stringResource(id = labelId)) }, leadingIcon = {
+        value = inputText,
+        onValueChange = onValueChange,
+        label = { Text(stringResource(id = labelId)) },
+        leadingIcon = {
             Icon(
-                painter = painterResource(id = iconId), contentDescription = null
+                painter = painterResource(id = iconId),
+                contentDescription = null
             )
-        }, maxLines = 2, modifier = modifier
+        },
+        maxLines = 2,
+        modifier = modifier
     )
 }
 
@@ -111,17 +116,15 @@ fun ClassDropdownMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    // TODO create a list of the class name strings so you can use it below in the DropdownMenu
-
-    Column(
+      Column(
         modifier = modifier
     ) {
         TextField(
-            value = "", // TODO
-            onValueChange = { /*TODO*/ },
+            value = currentClass,
+            onValueChange = onTextChange,
             label = { Text("Class") },
             leadingIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { expanded = !expanded }) {
                     Icon(
                         imageVector = if (expanded) {
                             Icons.Default.KeyboardArrowUp
@@ -131,20 +134,30 @@ fun ClassDropdownMenu(
                     )
                 }
             },
-            readOnly = true, // TODO if you want user to be able to input text, you need some logic that makes this false
+            readOnly = false, // TODO if you want user to be able to input text, you need some logic that makes this false
             // for instance, if the character is not default, or if the character is a custom character
+            // for me, it was !isCustom && isDefault
+            // this meant that on the initial screen, I set isCustom and isDefault to false, because no character
+            // had been selected yet. Then once they selected a character from the default list or "Custom"
+            // those are updated
+
             modifier = Modifier.fillMaxWidth()
         )
 
         DropdownMenu(
-            expanded = false, // TODO
-            onDismissRequest = { /*TODO */ },
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
         ) {
             /*TODO: use the list of class names to have all the class options in the menu */
             // The DropdownMenu item should go in a loop, the Text should be the class string
-            DropdownMenuItem(
-                text = { Text(text = "Class1") },
-                onClick = { /*TODO*/ })
+            defaultCharacters.forEach { character ->
+                DropdownMenuItem(
+                    text = { Text(text = character.charClass) },
+                    onClick = {
+                        onDropdownChange(character.charClass)
+                        expanded = false
+                    })
+            }
         }
     }
 
@@ -156,8 +169,8 @@ fun ClassDropdownMenu(
 fun TextEntryPreview() {
     TextEntry(
         character = Character(
-        name = "James", charClass = "Awesome"
-    ),
+            name = "James", charClass = "Awesome"
+        ),
         onNameChange = {},
         onClassChange = {},
         onDescriptionChange = {},
