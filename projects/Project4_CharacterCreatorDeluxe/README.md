@@ -38,7 +38,8 @@ The files of interest, with comments to guide you, are:
 - `TalentPointScreen.kt`
 - `CharacterCardScreen.kt`
 - `CharacterViewModel.kt`
-
+- `TextEntry.kt`
+  
 The other files are mostly unchanged from Project 3. However, there are some additions to a few that may be worth checking out. 
 
 - `DataSource.kt`  
