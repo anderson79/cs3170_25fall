@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.charactercreator.ui.theme.CharacterCreatorTheme
 
 
 @Composable
@@ -57,5 +59,19 @@ fun StatButtons(
                 contentDescription = "$statName down"
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun StatButtonsPreview() {
+    CharacterCreatorTheme {
+        StatButtons(
+            statName = "James",
+            value = "10",
+            iconId = R.drawable.outline_category_24,
+            onPlusClick = {},
+            onMinusClick = {}
+        )
     }
 }

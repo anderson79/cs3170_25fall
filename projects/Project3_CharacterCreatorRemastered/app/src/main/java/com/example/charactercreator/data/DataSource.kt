@@ -2,7 +2,7 @@ package com.example.charactercreator.data
 
 import androidx.annotation.DrawableRes
 import com.example.charactercreator.R
-import com.example.charactercreator.makeCharacter
+import com.example.charactercreator.model.Character
 
 object DataSource {
 
@@ -10,7 +10,7 @@ object DataSource {
     // It's our responsibility to make sure the points don't go past the max point total
     // OR - we can use these points to figure out what the point total should be for any character
     val defaultCharacters = listOf(
-        makeCharacter(
+        Character.makeCharacter(
             name = "Thorin",
             charClass = "Warrior",
             description = "A battle-hardened fighter who relies on brute strength and endurance.",
@@ -19,7 +19,7 @@ object DataSource {
             speed = 2,
             focus = 1
         ),
-        makeCharacter(
+        Character.makeCharacter(
             name = "Lyra",
             charClass = "Rogue",
             description = "A quick and cunning thief who strikes from the shadows.",
@@ -28,7 +28,7 @@ object DataSource {
             speed = 4,
             focus = 2
         ),
-        makeCharacter(
+        Character.makeCharacter(
             name = "Seraphine",
             charClass = "Paladin",
             description = "A holy knight devoted to protecting allies and vanquishing evil.",
@@ -37,7 +37,7 @@ object DataSource {
             speed = 2,
             focus = 2
         ),
-        makeCharacter(
+        Character.makeCharacter(
             name = "Eldrin",
             charClass = "Mage",
             description = "A master of arcane arts who channels focus into devastating spells.",

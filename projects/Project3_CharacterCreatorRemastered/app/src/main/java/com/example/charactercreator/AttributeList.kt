@@ -12,8 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.charactercreator.data.DataSource
 import com.example.charactercreator.data.DataSource.attribList
+import com.example.charactercreator.model.Character
+import com.example.charactercreator.ui.theme.CharacterCreatorTheme
 
 @Composable
 fun AttributeList(
@@ -38,5 +42,20 @@ fun AttributeList(
                 Text(text = "${attributeMap.getOrDefault(attribute.name, 0)}")
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun AttributeListPreview() {
+    CharacterCreatorTheme {
+        AttributeList(
+            stats = mapOf( // dummy data so we can preview things
+                DataSource.statList[0].name to 3,
+                DataSource.statList[1].name to 2,
+                DataSource.statList[2].name to 5,
+                DataSource.statList[3].name to 1,
+                )
+        )
     }
 }

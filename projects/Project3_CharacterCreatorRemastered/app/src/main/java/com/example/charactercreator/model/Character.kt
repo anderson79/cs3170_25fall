@@ -30,13 +30,13 @@
  * If so, also need to comment out all methods/functions that take either a Map or an Array.
  * Basically anything that is red after you comment out either statMap or statArray
  */
-package com.example.charactercreator
+package com.example.charactercreator.model
 
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+
 
 /**
  * All the fields of Character have a default initial value, so you only need to give it the
@@ -79,10 +79,12 @@ data class Character(
     // in statList (Endurance), etc.
     val statArray: Array<Int> = arrayOf(0, 0, 0, 0),
 
-    // can use individual variables
-    // I don't recommend this as it will be more work
-    // val power: Int = 0,
-    // val endurance: Int = 0,
+
+    /*
+     * NOTE: You can comment out the map or array if you're not using it to make it so you
+     *          don't accidentally use both. If you do, it will force you to comment/remove
+     *          everywhere the map/array is being used, but at least you'll be sure
+     */
 
     // *******************************************
     // Character attributes
@@ -112,8 +114,11 @@ data class Character(
      * Because of how I'm calculating total points here, you should only either
      * use the array or map to store the stats.
      */
-    val totalPoints: Int
-        get() = (statMap.values.sum() + statArray.sum())
+    val totalPointsMap: Int
+        get() = statMap.values.sum()
+
+    val totalPointsArray: Int
+        get() = statArray.sum()
 
     /**
      * This version of withUpdated stat added delta to the stat with the key
@@ -132,7 +137,7 @@ data class Character(
         val newValue = (currentValue + delta).coerceAtLeast(0)
 
         // Prevent exceeding total pool
-        if (delta > 0 && totalPoints >= maxPoints) return this
+        if (delta > 0 && totalPointsMap >= maxPoints) return this
         if (newValue == currentValue) return this
 
         newStats[statName] = newValue
@@ -158,7 +163,7 @@ data class Character(
         val newValue = (currentValue + delta).coerceAtLeast(0)
 
         // Prevent exceeding total pool
-        if (delta > 0 && totalPoints >= maxPoints) return this
+        if (delta > 0 && totalPointsMap >= maxPoints) return this
         if (newValue == currentValue) return this
 
         newStats[statIndex] = newValue
@@ -183,7 +188,7 @@ data class Character(
             val attack = (2 * stats.getOrDefault("Power", 0)) + (stats.getOrDefault("Speed", 0) / 2)
             val defense =
                 (2 * stats.getOrDefault("Endurance", 0)) + (stats.getOrDefault("Speed", 0) / 2)
-            val cost = ((attack + defense) / 4) + (stats.getOrDefault("Focus", 0) / 2)
+            val cost =( ((attack + defense) / 2) - (stats.getOrDefault("Focus", 0) / 2)).coerceAtLeast(0)
 
             return mapOf(
                 "Attack" to attack, "Defense" to defense, "Cost" to cost
@@ -210,45 +215,34 @@ data class Character(
                 attack, defense, cost
             )
         }
-    }
 
+        // Helper method to make a Character more easily
+        // call this like:
+        // Character.makeCharacter(name = "CharacterName", charClass = "CharacterClass", ...)
+        fun makeCharacter(
+            name: String = "",
+            charClass: String = "",
+            description: String = "",
+            power: Int = 0,
+            endurance: Int = 0,
+            speed: Int = 0,
+            focus: Int = 0
+        ): Character {
+            val statsMap = mapOf(
+                "Power" to power, "Endurance" to endurance, "Speed" to speed, "Focus" to focus
+            )
 
-    /**
-     * Helper function to update the given stat based on a String. The characterState.value is assigned
-     * to a different Character if a change has occured, which will trigger recomposition
-     *
-     * @param characterState mutable state, the value field is reassigned which will trigger recomposition
-     * @param statName String of the stat in statMap to be updated
-     * @param delta how much (usually +/- 1) to change the stat by
-     * @param maxPoints the max limit for the sum of points, so we don't go over
-     */
-    fun updateStat(
-        statName: String, delta: Int, maxPoints: Int
-    ) {
-        val current = characterState.value
-        val updated = current.withUpdatedStat(statName, delta, maxPoints)
-        if (updated != current) {
-            characterState.value = updated
-        }
-    }
+            val statsArray = arrayOf(power, endurance, speed, focus)
 
-
-    /**
-     * Helper function to update the given stat based on an index. The characterState.value is assigned
-     * to a different Character if a change has occured, which will trigger recomposition
-     *
-     * @param characterState mutable state, the value field is reassigned which will trigger recomposition
-     * @param statIndex Index of the stat in statArray to be updated
-     * @param delta how much (usually +/- 1) to change the stat by
-     * @param maxPoints the max limit for the sum of points, so we don't go over
-     */
-    fun updateStat(
-        statIndex: Int, delta: Int, maxPoints: Int
-    ): Character {
-        val current = characterState.value
-        val updated = current.withUpdatedStat(statIndex, delta, maxPoints)
-        if (updated != current) {
-            characterState.value = updated
+            return Character(
+                name = name,
+                charClass = charClass,
+                description = description,
+                statMap = statsMap,
+                statArray = statsArray,
+                attribMap = computeAttributes(statsMap),
+                attribArray = computeAttributes(statsArray)
+            )
         }
     }
 
@@ -273,31 +267,3 @@ fun rememberCharacterState(): MutableState<Character> {
 }
 
 
-
-// Helper function to make a Character more easily
-fun makeCharacter(
-    name: String = "",
-    charClass: String = "",
-    description: String = "",
-    power: Int = 0,
-    endurance: Int = 0,
-    speed: Int = 0,
-    focus: Int = 0
-): Character {
-    val statsMap = mapOf(
-        "Power" to power,
-        "Endurance" to endurance,
-        "Speed" to speed,
-        "Focus" to focus
-    )
-
-    val statsArray = arrayOf(power, endurance, speed, focus)
-
-    return Character(
-        name = name,
-        charClass = charClass,
-        description = description,
-        statMap = statsMap,
-        statArray = statsArray
-    )
-}

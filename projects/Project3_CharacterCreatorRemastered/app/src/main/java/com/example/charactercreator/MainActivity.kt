@@ -18,12 +18,16 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.charactercreator.data.DataSource.statList
+import com.example.charactercreator.model.CharacterCreatorViewModel
+import com.example.charactercreator.model.rememberCharacterState
 import com.example.charactercreator.ui.theme.CharacterCreatorTheme
 
 class MainActivity : ComponentActivity() {
@@ -45,11 +49,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CharacterCreatorApp(
     modifier: Modifier = Modifier,
+    characterCreatorViewModel: CharacterCreatorViewModel = viewModel()
 ) {
 
-    val characterState = rememberCharacterState()
-    val character = characterState.value
-    val remainingPoints = character.maxPoints - character.totalPoints
+    val characterState = characterCreatorViewModel.uiState.collectAsState()
+    val character = characterState.value.currentCharacter
+    val remainingPoints = character.maxPoints - character.totalPointsMap
     //characterState.value.updateStat()
     //characterViewModel.updateStat()
     Column(
@@ -76,19 +81,22 @@ fun CharacterCreatorApp(
         TextEntry(
             character = character,
             onNameChange = { newName ->
-                characterState.value = characterState.value.copy(name = newName)
+                characterCreatorViewModel.onNameChange(newName)
             },
-            { newClass ->
-                characterState.value = characterState.value.copy(charClass = newClass)
+            onClassChange = { newClass ->
+                characterCreatorViewModel.onClassChange(newClass)
             },
-            { newDesc ->
-                characterState.value = characterState.value.copy(description = newDesc)
+            onDescriptionChange = { newDesc ->
+                characterCreatorViewModel.onDescriptionChange(newDesc)
             },
+            onSelectedClassChange = { newSelectedClass ->
+                characterCreatorViewModel.onSelectedClassChange(newSelectedClass)
+            },
+            isCustom = characterState.value.isCustom,
             modifier = Modifier.padding(24.dp)
         )
         Spacer(modifier = Modifier.padding(16.dp))
 
-        // TODO Add 4 StatButtons to inc/dec each stat. These can be placed, two rows of two sets of buttons, or you can think of a way to use a LazyVerticalGrid to loop through statList and create 4 sets of buttons that way
         // Each StatButton should call updateStat() with +/- 1
         Row(
             horizontalArrangement = Arrangement.Start,
@@ -109,63 +117,26 @@ fun CharacterCreatorApp(
                         value = (character.statMap[stat.name] ?: 0).toString(),
                         iconId = stat.icon,
                         onPlusClick = {
-                            updateStat(
-                                characterState,
-                                stat.name,
-                                1,
-                                character.maxPoints
-                            )
+                            characterCreatorViewModel.updateStat(statName = stat.name, delta = 1, maxPoints = character.maxPoints)
                         },
-                        //{
-//                            if (character.totalPoints < MAX_STATS) {
-//                                setStatMap((statMap + (stat to statMap[stat]?.plus(1))) as HashMap<String, Int>)
-//                            }
-
-                        //},
                         onMinusClick = {
-                            updateStat(
-                                characterState,
-                                stat.name,
-                                -1,
-                                character.maxPoints
-                            )
+                            characterCreatorViewModel.updateStat(statName = stat.name, delta = -1, maxPoints = character.maxPoints)
+
                         },
-//                            {
-//                            if (statMap.getOrDefault(stat, 0) > 0) {
-//                                setStatMap((statMap + (stat to statMap[stat]?.minus(1))) as HashMap<String, Int>)
-//                            }
-//                        },
                     )
                 }
 
             }
         }
 
-        // TODO: show remaining points (simple Text here is good)
         Spacer(Modifier.padding(vertical = 8.dp))
         Text(text = "Points remaining: ${remainingPoints}/${character.maxPoints}")
         Spacer(Modifier.padding(vertical = 8.dp))
 
-        // TODO: show summary of Attack, Defense, and Cost
         AttributeList(stats = character.statMap)
     }
 }
 
-// TODO: StatButtons composable
-// Needs: stat name, stat value, lambdas for increment and decrementing
-// Optional: Icon (or Icon resource ID), Modifier
-
-// TODO: TextEntry composable
-// Needs: Character info (name, class, description), lambdas for when name, class, and description changes
-// Optional: Modifier
-
-// TODO: EnterTextField composable
-// Needs: value to display, lambda to handle when the value changes (when user types)
-// Optional: String (or String resource id) for label, Icon (or Icon resource ID), Modifier
-
-// TODO: AttributeList Composable
-// Needs: map of stats: values
-// Optional: Modifier
 
 @Preview(showBackground = true)
 @Composable
