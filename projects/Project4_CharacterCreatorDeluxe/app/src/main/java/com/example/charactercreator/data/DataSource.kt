@@ -14,12 +14,12 @@ package com.example.charactercreator.data
 import androidx.annotation.DrawableRes
 import com.example.charactercreator.R
 import com.example.charactercreator.model.CharacterCreatorUiState
-import com.example.charactercreator.model.makeCharacter
+import com.example.charactercreator.model.Character
 
 object DataSource {
 
     // a dummyCharacter we can use in our previews
-    val dummyChar = makeCharacter(
+    val dummyChar = Character.makeCharacter(
         name = "Android",
         charClass = "Mobile Phone",
         description = "Android is a Mobile Phone who, among other things, can tell you what the weather is currently in Antarcica",
@@ -45,7 +45,7 @@ object DataSource {
     // It's our responsibility to make sure the points don't go past the max point total
     // OR - we can use these points to figure out what the point total should be for any character
     val defaultCharacters = listOf(
-        makeCharacter(
+        Character.makeCharacter(
             name = "Thorin",
             charClass = "Warrior",
             description = "A battle-hardened fighter who relies on brute strength and endurance.",
@@ -58,7 +58,7 @@ object DataSource {
             classIcon = R.drawable.swords_24px,
             characterIcon = R.drawable.baseline_heart_broken_24,
         ),
-        makeCharacter(
+        Character.makeCharacter(
             name = "Lyra",
             charClass = "Rogue",
             description = "A quick and cunning thief who strikes from the shadows.",
@@ -71,7 +71,7 @@ object DataSource {
             classIcon = R.drawable.dark_mode_24px,
             characterIcon = R.drawable.baseline_electric_bolt_24,
         ),
-        makeCharacter(
+        Character.makeCharacter(
             name = "Seraphine",
             charClass = "Paladin",
             description = "A holy knight devoted to protecting allies and vanquishing evil.",
@@ -84,7 +84,7 @@ object DataSource {
             classIcon = R.drawable.flare_24px,
             characterIcon = R.drawable.baseline_security_24,
         ),
-        makeCharacter(
+        Character.makeCharacter(
             name = "Eldrin",
             charClass = "Mage",
             description = "A master of arcane arts who channels focus into devastating spells.",
@@ -120,4 +120,22 @@ object DataSource {
         StatInfo("Defense", R.drawable.baseline_security_24, "Amount of damage blocked"),
         StatInfo("Cost", R.drawable.baseline_price_change_24, "Cost for casting this character"),
     )
+
+    /**
+     * Helper function to convert an array of stats/attributes into a map of
+     * statName: statValue
+     *
+     * @param statArray the stat values in parallel with the stats in statInfoList
+     * @param statInfoList list of StatInfo, uses the names as the keys
+     * @return map of statName from statInfoList to statValue from statArray
+     */
+    fun mapFromArray(
+        statArray: Array<Int>,
+        statInfoList: List<StatInfo>
+    ): Map<String, Int> {
+        return statInfoList
+            .map {statInfo -> statInfo.name}
+            .zip(statArray)
+            .toMap()
+    }
 }

@@ -90,11 +90,11 @@ data class Character(
     // Another option is to use an array where index 0 in statArray represents the same
     // stat as index 0 does in statsList above (Power), and index 1 is the stat at index 1
     // in statList (Endurance), etc.
-    //val statArray: Array<Int> = arrayOf(0, 0, 0, 0),
+    val statArray: Array<Int> = arrayOf(0, 0, 0, 0),
     // Similar to statArray, the value at index 0 of attribArray represents the value
     // of the attribute located at index 0 in attribList (Attack), index 1 is the attribute
     // at index 1 in attribList (Defensee), etc.
-    //val attribArray: Array<Int> = arrayOf(0, 0, 0),
+    val attribArray: Array<Int> = arrayOf(0, 0, 0),
 
     // You can modify this to give more flexibility, but it should remain constant once a character
     // is created. Although, you could think of a situation where a specific class gets a different
@@ -166,20 +166,20 @@ data class Character(
      * @param maxPoints value the sum of points cannot exceed
      * @return a copy of the character with an updated statArray
      */
-//    fun withUpdatedStat(statIndex: Int, delta: Int, maxPoints: Int): Character {
-//        val newStats = statArray.clone()
-//        val currentValue = newStats[statIndex]
-//        val newValue = (currentValue + delta).coerceAtLeast(0)
-//
-//        // Prevent exceeding total pool
-//        if (delta > 0 && totalPoints >= maxPoints) return this
-//        if (newValue == currentValue) return this
-//
-//        newStats[statIndex] = newValue
-//        return copy(
-//            statArray = newStats, attribArray = computeAttributes(newStats)
-//        )
-//    }
+    fun withUpdatedStat(statIndex: Int, delta: Int, maxPoints: Int): Character {
+        val newStats = statArray.clone()
+        val currentValue = newStats[statIndex]
+        val newValue = (currentValue + delta).coerceAtLeast(0)
+
+        // Prevent exceeding total pool
+        if (delta > 0 && totalPoints >= maxPoints) return this
+        if (newValue == currentValue) return this
+
+        newStats[statIndex] = newValue
+        return copy(
+            statArray = newStats, attribArray = computeAttributes(newStats)
+        )
+    }
 
     companion object {
         /**
@@ -224,6 +224,45 @@ data class Character(
                 attack, defense, cost
             )
         }
+
+
+        // Helper function to make a Character more easily
+        fun makeCharacter(
+            name: String = "",
+            charClass: String = "",
+            description: String = "",
+            power: Int = 0,
+            endurance: Int = 0,
+            speed: Int = 0,
+            focus: Int = 0,
+            @ColorRes characterColor: Int? = null,
+            @DrawableRes characterImage: Int? = null,
+            @DrawableRes characterIcon: Int? = null,
+            @DrawableRes classIcon: Int? = null,
+        ): Character {
+            val statsMap = mapOf(
+                "Power" to power,
+                "Endurance" to endurance,
+                "Speed" to speed,
+                "Focus" to focus
+            )
+
+            val statsArray = arrayOf(power, endurance, speed, focus)
+
+            return Character(
+                name = name,
+                charClass = charClass,
+                description = description,
+                statMap = statsMap,
+                statArray = statsArray,
+                attribMap = Character.computeAttributes(statsMap),
+                attribArray = Character.computeAttributes(statsArray),
+                characterColor = characterColor,
+                characterImage = characterImage,
+                characterIcon = characterIcon,
+                classIcon = classIcon,
+            )
+        }
     }
 
     init {
@@ -246,41 +285,3 @@ data class Character(
 //    return remember { mutableStateOf(Character()) }
 //}
 
-
-// Helper function to make a Character more easily
-fun makeCharacter(
-    name: String = "",
-    charClass: String = "",
-    description: String = "",
-    power: Int = 0,
-    endurance: Int = 0,
-    speed: Int = 0,
-    focus: Int = 0,
-    @ColorRes characterColor: Int? = null,
-    @DrawableRes characterImage: Int? = null,
-    @DrawableRes characterIcon: Int? = null,
-    @DrawableRes classIcon: Int? = null,
-): Character {
-    val statsMap = mapOf(
-        "Power" to power,
-        "Endurance" to endurance,
-        "Speed" to speed,
-        "Focus" to focus
-    )
-
-    val statsArray = arrayOf(power, endurance, speed, focus)
-
-    return Character(
-        name = name,
-        charClass = charClass,
-        description = description,
-        statMap = statsMap,
-        //statArray = statsArray,
-        attribMap = Character.computeAttributes(statsMap),
-        //attribArray = Character.computeAttributes(statsArray),
-        characterColor = characterColor,
-        characterImage = characterImage,
-        characterIcon = characterIcon,
-        classIcon = classIcon,
-    )
-}

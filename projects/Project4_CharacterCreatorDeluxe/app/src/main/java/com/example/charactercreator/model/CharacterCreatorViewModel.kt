@@ -1,40 +1,4 @@
 package com.example.charactercreator.model
-/**
- * ----------------------------------------------------------------------------
- * Project 4 Starter Code – ViewModel (CharacterCreatorViewModel)
- * ----------------------------------------------------------------------------
- *
- * This ViewModel stores ALL character data and is responsible for:
- *
- *   • Updating name, class, and description
- *   • Updating individual stats (+ / -)
- *   • Updating all stats at once (optional helper)
- *   • Computing attributes (attack, defense, cost) automatically
- *   • Resetting the character when needed
- *   • Loading a default character when the user selects a premade class
- *
- * WHAT THIS FILE PROVIDES:
- *   ✓ A MutableStateFlow holding the current UI state
- *   ✓ Helper fields:
- *         areTextFieldsFilled
- *         areAllPointsSpent
- *   ✓ Method signatures for all required logic
- *
- * WHAT YOU MUST IMPLEMENT:
- *   • updateStat() using Character.withUpdatedStat()
- *   • updateStats() (optional helper)
- *   • onNameChange(), onClassChange(), onDescriptionChange()
- *   • onDefaultCharacterSelected() to load premade characters
- *   • onSelectedClassChange() to switch between default and custom modes
- *   • resetCharacter() to clear the state
- *
- * IMPORTANT NOTES:
- *   - NEVER mutate Character directly. Always use `copy()` to produce a new one.
- *   - ALWAYS update state using `_uiState.update { … }`
- *   - The UI re-renders automatically whenever uiState changes.
- *
- * ----------------------------------------------------------------------------
- */
 
 import androidx.lifecycle.ViewModel
 import com.example.charactercreator.data.DataSource
@@ -45,173 +9,190 @@ import kotlinx.coroutines.flow.update
 
 
 class CharacterCreatorViewModel : ViewModel() {
-    /**
-     * The ViewModel holds a StateFlow of CharacterCreatorUiState.
-     *
-     * UI screens will collect this state:
-     *      val uiState by viewModel.uiState.collectAsState()
-     *
-     * and automatically recompose whenever the state updates.
-     */
     private var _uiState = MutableStateFlow(CharacterCreatorUiState())
     val uiState = _uiState.asStateFlow()
 
 
-    /**
-     * Helper property:
-     * Returns true if *all* required text fields (name, class, description)
-     * have non-empty values.
-     *
-     * You can use this to enable/disable the Next button on Screen 1.
-     */
     val areTextFieldsFilled: Boolean
         get() = !_uiState.value.currentCharacter.name.isEmpty() &&
                 !_uiState.value.currentCharacter.charClass.isEmpty() &&
                 !_uiState.value.currentCharacter.description.isEmpty()
 
-    /**
-     * Helper property:
-     * Returns true only when the user has spent every available stat point.
-     *
-     * You can use this to enable/disable the Next button on the Talent screen.
-     */
     val areAllPointsSpent: Boolean
         get() = _uiState.value.currentCharacter.maxPoints == _uiState.value.currentCharacter.totalPoints
-
     /**
-     * updateStat()
-     * ------------------------------------------------------------------------
-     * Called when the user taps + or – on a stat.
+     * Helper function to update the given stat based on a String. The characterState.value is assigned
+     * to a different Character if a change has occured, which will trigger recomposition
      *
-     * Parameters:
-     *   statName : String    → which stat to update ("Power", "Speed", etc.)
-     *   delta    : Int       → +1 or -1
-     *   maxPoints: Int       → upper limit for total stat points
-     *
-     * TODO:
-     *   - Grab the current character from uiState
-     *   - Call character.withUpdatedStat(statName, delta, maxPoints)
-     *   - Use _uiState.update { ... } to store the new character
-     *
-     * NOTE:
-     *   withUpdatedStat() returns the SAME character if no change is allowed
-     *   (e.g., would exceed maxPoints or go below 0). Only update the state
-     *   when a change actually happens.
-     * ------------------------------------------------------------------------
+     * @param characterState mutable state, the value field is reassigned which will trigger recomposition
+     * @param statName String of the stat in statMap to be updated
+     * @param delta how much (usually +/- 1) to change the stat by
+     * @param maxPoints the max limit for the sum of points, so we don't go over
      */
     fun updateStat(
         statName: String, delta: Int, maxPoints: Int
     ) {
-        // TODO
+        val current = _uiState.value.currentCharacter
+        val updated = current.withUpdatedStat(statName, delta, maxPoints)
+        if (updated != current) {
+            _uiState.update { currentState ->
+                currentState.copy(currentCharacter = updated)
+            }
+        }
     }
 
     /**
-     * updateStats()
-     * ------------------------------------------------------------------------
-     * Optional helper methods to update all stats at once via a map or array.
+     * Helper function to update the given stat based on an index. The characterState.value is assigned
+     * to a different Character if a change has occured, which will trigger recomposition
      *
-     * These are useful if you want to load a default character template.
-     *
-     * TODO: Implement the map version at minimum, updating:
-     *     - statMap
-     *     - attribMap (use Character.computeAttributes())
+     * @param characterState mutable state, the value field is reassigned which will trigger recomposition
+     * @param statIndex Index of the stat in statArray to be updated
+     * @param delta how much (usually +/- 1) to change the stat by
+     * @param maxPoints the max limit for the sum of points, so we don't go over
      */
+    fun updateStat(
+        statIndex: Int, delta: Int, maxPoints: Int
+    ) {
+        val current = _uiState.value.currentCharacter
+        val updated = current.withUpdatedStat(statIndex, delta, maxPoints)
+        if (updated != current) {
+            _uiState.update { currentState ->
+                currentState.copy(currentCharacter = updated)
+            }
+        }
+    }
+
+
+    /**
+     * If you just want to update the entire stats array, you can pass the new one in here and
+     * it will update the stats as well as the derived attributes
+     *
+     * @param newStatArray the new array of stats to be used
+     */
+    fun updateStats(
+        newStatArray: Array<Int>
+    ) {
+        if (!_uiState.value.currentCharacter.statArray.equals(newStatArray)) { // only update if we need to
+            _uiState.update { currentState ->
+                currentState.copy(
+                    currentCharacter =
+                        currentState.currentCharacter.copy(
+                            statArray = newStatArray.clone(),
+                            attribArray = Character.computeAttributes(newStatArray)
+                        )
+                )
+            }
+
+            // also update the statMap
+            updateStats(
+                DataSource.mapFromArray(
+                    statArray = newStatArray,
+                    statInfoList = DataSource.statList
+                )
+            )
+        }
+    }
+
     fun updateStats(
         newStatMap: Map<String, Int>
     ) {
-        // TODO
+        if (!_uiState.value.currentCharacter.statMap.equals(newStatMap)) { // only update if we need to
+            _uiState.update { currentState ->
+                currentState.copy(
+                    currentCharacter = currentState.currentCharacter.copy(
+                        statMap = newStatMap,
+                        attribMap = Character.computeAttributes(newStatMap)
+                    )
+                )
+            }
+
+            // also update the statArray
+            updateStats(newStatMap.values.toTypedArray())
+        }
     }
 
-    /**
-     * onNameChange()
-     * ------------------------------------------------------------------------
-     * Called whenever the name TextField updates.
-     *
-     * TODO:
-     *   - Use _uiState.update { currentState -> ... }
-     *   - Replace currentCharacter with a copy containing the new name.
-     *
-     * Example pattern:
-     *   _uiState.update { state ->
-     *       state.copy(currentCharacter = state.currentCharacter.copy(name = newName))
-     *   }
-     */
     fun onNameChange(newName: String) {
-        // TODO
+        _uiState.update { currentState ->
+            currentState.copy(currentState.currentCharacter.copy(name = newName))
+        }
     }
 
-    /**
-     * onClassChange()
-     * ------------------------------------------------------------------------
-     * Called when the user TYPES a class name (custom class mode).
-     * This should NOT load default character data. It should only change
-     * the charClass field in the Character.
-     */
     fun onClassChange(newClass: String) {
-        // TODO
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentCharacter = currentState.currentCharacter.copy(
+                    charClass = newClass
+
+                )
+            )
+        }
     }
 
-    /**
-     * onDescriptionChange()
-     * ------------------------------------------------------------------------
-     * TODO:
-     *   - Update the character's description field
-     *   - Follow the same pattern used in onNameChange()
-     */
     fun onDescriptionChange(newDescription: String) {
-        // TDOO
+        _uiState.update { currentState ->
+            currentState.copy(currentState.currentCharacter.copy(description = newDescription))
+        }
     }
 
+    private fun changeNameToDefault(classDefault: String) {
+        // change the character's name
+        val charNames = defaultCharacters.groupBy { it.charClass }
+            .mapValues { (_, chars) -> chars.map { it.name } }
 
-    /**
-     * onDefaultCharacterSelected()
-     * ------------------------------------------------------------------------
-     * Called when the user selects a premade class from the dropdown.
-     *
-     * TODO:
-     *   - Find the Character in defaultCharacters that matches defaultClass
-     *   - Set uiState.currentCharacter to that Character
-     *
-     * DataSource.defaultCharacters is a List<Character> you can search through.
-     */
+        onNameChange(
+            newName = charNames.getOrDefault(
+                key = classDefault, defaultValue = List(
+                    size = 1, init = { "No name" })
+            ).get(0)
+        )
+    }
+
+    private fun changeStatsToDefault(classDefault: String) {
+        val charStatMaps =
+            defaultCharacters.associate { character -> character.charClass to character.statMap }
+        //val charStatArrays = defaultCharacters.associate { it.charClass to it.statArray }
+
+        for (character in defaultCharacters) {
+            if (character.name.equals(classDefault)) {
+                _uiState.value = _uiState.value.copy(currentCharacter = character)
+            }
+        }
+    }
+
     fun onDefaultCharacterSelected(defaultClass: String) {
-        // TODO
+        val defaultCharsMap = defaultCharacters.associate { character ->
+            character.charClass to character
+        }
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentCharacter = defaultCharsMap.getOrDefault(
+                    key = defaultClass,
+                    defaultValue = DataSource.dummyChar
+                )
+            )
+        }
+
     }
 
-    /**
-     * onSelectedClassChange()
-     * ------------------------------------------------------------------------
-     * Called whenever the class dropdown selection changes.
-     *
-     * newSelectedClass can be:
-     *   • One of the default class names → load default character
-     *   • "Custom" → reset to a blank character and allow typing
-     *
-     * TODO:
-     *   - Check if newSelectedClass is "Custom"
-     *       → call resetCharacter(), then allow typing
-     *   - Otherwise:
-     *       → call onDefaultCharacterSelected(newSelectedClass)
-     *
-     * Also update any uiState flags you need (isCustom, isDefault, etc.).
-     * ------------------------------------------------------------------------
-     */
     fun onSelectedClassChange(newSelectedClass: String) {
-        // TODO
+        val isCustom = newSelectedClass == "Custom"
+        if (!isCustom) {
+            onDefaultCharacterSelected(newSelectedClass)
+
+        } else {
+            // if creating a custom character, clear out the fields
+            resetCharacter()
+
+        }
+        _uiState.update { currentState ->
+            currentState.copy(
+                selectedClass = newSelectedClass, isCustom = isCustom, isDefault = !isCustom
+            )
+        }
     }
 
-    /**
-     * resetCharacter()
-     * ------------------------------------------------------------------------
-     * TODO:
-     *   - Reset the UI state back to a brand-new CharacterCreatorUiState()
-     *   - This clears ALL fields (name, class, description, stats, etc.)
-     *
-     * This is used both by the Reset button on Screen 1
-     * and the Cancel button on Screen 3.
-     * ------------------------------------------------------------------------
-     */
     fun resetCharacter() {
-        // TODO
+        _uiState.value = CharacterCreatorUiState()
     }
 }
