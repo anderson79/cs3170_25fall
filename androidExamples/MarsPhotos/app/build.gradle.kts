@@ -69,14 +69,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
 
     implementation(libs.retrofit.v2110)
-    implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
+    //implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
 
 // kotlin serialization
-    //implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.json)
 
 // Retrofit with Kotlin serialization converter
-    //implementation(libs.retrofit2.kotlinx.serialization.converter)
-    //implementation(libs.okhttp)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.okhttp)
 
 // for testing code with coroutines
     testImplementation(libs.kotlinx.coroutines.test)
