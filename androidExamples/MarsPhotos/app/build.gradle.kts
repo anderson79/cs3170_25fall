@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    // ADDED FOR MARS PHOTOS APP
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -59,4 +62,27 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+///////////////////////////////
+// ADDED FOR MARS PHOTOS APP
+    debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation(libs.androidx.ui.tooling)
+
+    implementation(libs.retrofit.v2110)
+    implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
+
+// kotlin serialization
+    //implementation(libs.kotlinx.serialization.json)
+
+// Retrofit with Kotlin serialization converter
+    //implementation(libs.retrofit2.kotlinx.serialization.converter)
+    //implementation(libs.okhttp)
+
+// for testing code with coroutines
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(kotlin("test"))
+
+// coil for async image loading
+    implementation(libs.coil.compose)
+
 }
